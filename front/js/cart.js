@@ -8,3 +8,13 @@ getProductInApi()
     removeProduct(deleteElements) 
     calculateTotalQuantity()
   })
+
+
+
+//  Recupère l'id des produits dans l'API
+function getProductInApi(){
+    return new Promise((resolve, reject) => {
+    const productsApi = fetch(`http://localhost:3000/api/products`)
+    resolve(productsApi);
+    })
+}
