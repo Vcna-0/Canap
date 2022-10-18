@@ -80,3 +80,18 @@ function updateQuantity(inputQuantityElements){
     })
   });
 }
+
+
+// Supprime un produit quand on clique sur supprimer
+function removeProduct(deleteElements){
+  deleteElements.forEach(product => {
+    product.addEventListener('click', () => {
+      const articleElement = product.closest('article')
+      const productToRemove = contentFromLocalstorage.find(localstorageProduct => localstorageProduct.itemId === articleElement.dataset.id && localstorageProduct.itemColor === articleElement.dataset.color)
+      contentFromLocalstorage.splice(productToRemove, 1)
+      localStorage.setItem("product", JSON.stringify(contentFromLocalstorage))
+      articleElement.remove()
+    })
+  })
+}
+
