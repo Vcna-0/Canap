@@ -1,3 +1,10 @@
+const sectionElement = document.getElementById("cart__items");
+const totalQuantityElement = document.getElementById("totalQuantity")
+const totalPriceElement = document.getElementById("totalPrice")
+
+const contentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
+
+
 getProductInApi()
   .then((response) => response.json())
   .then((productsApi) => {
@@ -18,6 +25,11 @@ function getProductInApi(){
     resolve(productsApi);
     })
 }
+
+
+// ============== AFFICHAGE DES PRODUITS ============== //
+
+
 // Récupère les informations sur le produit dans l'API
 function GetTheProductInfoFromTheApi(productsApi){
     contentFromLocalstorage.map((productList) => {
@@ -103,6 +115,13 @@ function calculateTotalQuantity(){
     }
     totalQuantityElement.textContent = totalProductQuantity
 }
+
+// function calculateTotalPrice(){
+// }
+
+// ============== FORMULAIRE ============== //
+
+
 const formData = [
   {
     name: "firstName",
@@ -163,3 +182,4 @@ function resetForm(){
         formInputElements[a].value = "";
     }
 }
+
