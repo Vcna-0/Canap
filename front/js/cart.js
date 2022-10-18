@@ -1,0 +1,10 @@
+getProductInApi()
+  .then((response) => response.json())
+  .then((productsApi) => {
+    GetTheProductInfoFromTheApi(productsApi)
+    const inputQuantityElements = document.querySelectorAll(".itemQuantity")
+    const deleteElements = document.querySelectorAll(".deleteItem")
+    updateQuantity(inputQuantityElements)
+    removeProduct(deleteElements) 
+    calculateTotalQuantity()
+  })
