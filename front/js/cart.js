@@ -65,3 +65,18 @@ function displaysProductInfo(modifiedProductList){
 }
 
 
+// Met à jour la quantité des produits
+function updateQuantity(inputQuantityElements){
+  inputQuantityElements.forEach(selectedInputQuantity => {
+    selectedInputQuantity.addEventListener('change', () =>{
+      if(selectedInputQuantity.value > 0 && selectedInputQuantity.value <= 100){
+        let updateQuantity = contentFromLocalstorage.find(localstorageProduct => (localstorageProduct.itemId === selectedInputQuantity.dataset.id) && (localstorageProduct.itemColor === selectedInputQuantity.dataset.color))
+        updateQuantity.itemQuantity = parseInt(selectedInputQuantity.value)
+        localStorage.setItem('product', JSON.stringify(contentFromLocalstorage));
+        calculateTotalQuantity()
+      }else{
+        window.alert("Veuillez choisir une quantité entre 0 et 100")
+      }
+    })
+  });
+}
