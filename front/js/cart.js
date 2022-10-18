@@ -95,3 +95,11 @@ function removeProduct(deleteElements){
   })
 }
 
+function calculateTotalQuantity(){
+    let localStorageProducts = contentFromLocalstorage;
+    let totalProductQuantity = 0;                          
+    for (let product of localStorageProducts){            
+        totalProductQuantity += parseInt(product.itemQuantity);         
+    }
+    totalQuantityElement.textContent = totalProductQuantity
+}
