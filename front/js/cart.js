@@ -135,7 +135,28 @@ const formData = [
   }
 
 ]
+
+const formInputElements = document.querySelectorAll('div.cart__order__form__question input');
 resetForm()
+
+
+formInputElements.forEach(selectedFormElement => {
+  selectedFormElement.addEventListener('change', () =>{
+    
+    const informationsToDisplay = formData.find(formDataElement => formDataElement.name === selectedFormElement.name)
+    let formElementIsValid = informationsToDisplay.regex.test(selectedFormElement.value)
+    let nameErrorElementId = selectedFormElement.name+"ErrorMsg"
+    const errorMessageElement =  document.getElementById(nameErrorElementId);
+
+    if (formElementIsValid) {
+      errorMessageElement.textContent = " "
+    }
+    else{
+      errorMessageElement.textContent = informationsToDisplay.error
+    }    
+  })
+});
+
 // Reset le formulaire 
 function resetForm(){
     for (let a = 0; a < formInputElements.length; a++) {
