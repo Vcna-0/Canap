@@ -135,3 +135,10 @@ const formData = [
   }
 
 ]
+resetForm()
+// Reset le formulaire 
+function resetForm(){
+    for (let a = 0; a < formInputElements.length; a++) {
+        formInputElements[a].value = "";
+    }
+}
