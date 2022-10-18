@@ -18,3 +18,14 @@ function getProductInApi(){
     resolve(productsApi);
     })
 }
+// Récupère les informations sur le produit dans l'API
+function GetTheProductInfoFromTheApi(productsApi){
+    contentFromLocalstorage.map((productList) => {
+      let modifiedProductList = {...productList};
+      modifiedProductList.price = productsApi.filter(apiProduct => apiProduct._id === modifiedProductList.itemId)[0].price
+      modifiedProductList.name = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].name
+      modifiedProductList.imgUrl = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].imageUrl
+      modifiedProductList.altTxt = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].altTxt
+      displaysProductInfo(modifiedProductList)
+    })
+}  
