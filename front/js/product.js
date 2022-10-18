@@ -19,6 +19,15 @@ const quantityInput = document.querySelector('#quantity');
 //   })
 
 
+// function getIdFromUrl(){
+//   return new Promise((resolve, reject)=>{
+//     const str = window.location.href;
+//     const url = new URL(str);
+//     const urlId = url.searchParams.get('id');
+//     resolve(urlId)
+//   })
+// }
+
 // function getProductInApi(urlId){
 //   return new Promise((resolve, reject) => {
 //     const reponse = fetch(`http://localhost:3000/api/products/${urlId}`)
