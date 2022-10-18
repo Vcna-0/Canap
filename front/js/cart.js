@@ -103,3 +103,35 @@ function calculateTotalQuantity(){
     }
     totalQuantityElement.textContent = totalProductQuantity
 }
+const formData = [
+  {
+    name: "firstName",
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    error: "Veuillez indiquer un prénom valide"
+  },
+
+  {
+    name: "lastName",
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    error: "Veuillez indiquer un nom valide"
+  },
+
+  {
+    name: "address",
+    regex: /([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*)/g,
+    error: "Veuillez indiquer une adresse valide"
+  },
+
+  {
+    name: "city",
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    error: "Veuillez indiquer une ville valide"
+  },
+
+  {
+    name: "email",
+    regex: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
+    error: "Veuillez indiquer une adresse mail valide"
+  }
+
+]
