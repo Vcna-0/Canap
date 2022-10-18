@@ -8,16 +8,18 @@ fetch('http://localhost:3000/api/products')
   })
   .catch(console.error);
 
+
+// Affiche les produits 
 function displayProducts(value) {
   for (const object of value) {
-    const a = document.createElement('a');
-    a.href = './product.html?id=' + object._id;
+    const aElement = document.createElement('a');
+    aElement.href = './product.html?id=' + object._id;
     let htmlelement = ` <article>
                           <img src="${object.imageUrl}" alt="${object.altTxt}">
                           <h3 class="productName">${object.name}</h3>
                           <p class="productDescription">${object.description}</p>
                         </article>`;
-    a.innerHTML = htmlelement;
-    sectionItems.appendChild(a);
+    aElement.innerHTML = htmlelement;
+    sectionItems.appendChild(aElement);
   }
 }
