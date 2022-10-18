@@ -6,20 +6,8 @@ const colorSelect = document.querySelector('#colors');
 const addCartButton = document.querySelector('#addToCart');
 const quantityInput = document.querySelector('#quantity');
 
-// A supp si bug
-//  Avec cette méthode, je n'arrive pas à réutiliser la valeur retourné par la fonction "getIdFromUrl"
-//  Pour l'utiliser plus loin dans d'autre fonction 
 // ----------------------------------------------------------
 // ----------------------------------------------------------
-// function getIdFromUrl(){
-//   return new Promise((resolve, reject)=>{
-//     const str = window.location.href;
-//     const url = new URL(str);
-//     const urlId = url.searchParams.get('id');
-//     resolve(urlId)
-//   })
-// }
-
 
 // getIdFromUrl()
 //   .then((urlId)=> {
@@ -36,15 +24,13 @@ const quantityInput = document.querySelector('#quantity');
 //     const reponse = fetch(`http://localhost:3000/api/products/${urlId}`)
 //     resolve(reponse)
 //   })
-  
 // }
+
 // ----------------------------------------------------------
 // ----------------------------------------------------------
-
-
 let productId = getIdFromUrl();
 
-
+// Recupère l'id dans l'url
 function getIdFromUrl(){
   const str = window.location.href;
   const url = new URL(str);
@@ -54,6 +40,7 @@ function getIdFromUrl(){
   return urlId;
 }
 
+// Recupère l'id du produit dans l'API
 function getProductInApi(urlId){
   fetch(`http://localhost:3000/api/products/${urlId}`)
   .then((response) => response.json())
@@ -63,6 +50,8 @@ function getProductInApi(urlId){
   .catch(console.error);
 }
 
+
+// Affiche les infos du produit selectionné
 function displaySelectedProduct(productFilter) {
   const img = document.createElement('img');
   img.src = productFilter.imageUrl;
@@ -85,10 +74,11 @@ addCartButton.addEventListener('click', () => {
 });
 
 
+// Vérifie la valeur des inputs
 function checkInputValues(){
   if (quantityInput.value && colorSelect.value != ''){
     if (quantityInput.value > 0 && quantityInput.value <= 100){
-        registerNewObject()
+        registerNewProduct()
     }else{
       window.alert('Veuillez choisir une quantité entre 0 et 100');
     }
@@ -97,8 +87,8 @@ function checkInputValues(){
   }
 }
 
-
-function registerNewObject(){
+// Enregistre le nouveau produit 
+function registerNewProduct(){
   const newItem = {
     itemId: productId,
     itemColor: colorSelect.value,
@@ -107,6 +97,7 @@ function registerNewObject(){
   compareStorageContents(newItem);
 }
 
+// Compare le nouveau produit avec le contenu du localStorage
 function compareStorageContents(newItem){
   const localStorageContent = JSON.parse(localStorage.getItem("product"));
   if (localStorageContent){
@@ -135,7 +126,12 @@ function compareStorageContents(newItem){
   }
 }
 
+// Ajoute le nouveau produit dans le localStorage
 function addProductInLocalStorage(localStorageContent){
   localStorage.setItem("product", JSON.stringify(localStorageContent));
 }
+
+
+
+
 
