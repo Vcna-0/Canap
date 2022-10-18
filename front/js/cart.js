@@ -29,3 +29,39 @@ function GetTheProductInfoFromTheApi(productsApi){
       displaysProductInfo(modifiedProductList)
     })
 }  
+
+
+
+// Affiche les informations des produits qui ont été ajouter au panier
+function displaysProductInfo(modifiedProductList){
+  return new Promise((resolve, reject) => {
+    const articleElement = document.createElement("article");
+    articleElement.className = "cart__item";
+    articleElement.dataset.id = modifiedProductList.itemId;
+    articleElement.dataset.color = modifiedProductList.itemColor;
+    articleElement.innerHTML = `<div class="cart__item__img">
+                                    <img src="${modifiedProductList.imgUrl}" alt="${modifiedProductList.altTxt}" />
+                                  </div>
+                                  <div class="cart__item__content">
+                                    <div class="cart__item__content__description">
+                                      <h2>${modifiedProductList.name}</h2>
+                                    <p>${modifiedProductList.itemColor}</p>
+                                    <p>${modifiedProductList.price} €</p>
+                                  </div>
+                                  <div class="cart__item__content__settings">
+                                    <div class="cart__item__content__settings__quantity">
+                                      <p>Qté :</p>
+                                      <input type="number" class="itemQuantity" data-id="${modifiedProductList.itemId}" data-color="${modifiedProductList.itemColor}" name="itemQuantity" min="1" max="100" value=${modifiedProductList.itemQuantity} />
+                                    </div>
+                                    <div class="cart__item__content__settings__delete">
+                                      <p class="deleteItem">Supprimer</p>
+                                    </div>
+                                  </div>
+                                </div>`
+                                
+    resolve(sectionElement.appendChild(articleElement));
+
+  })
+}
+
+
