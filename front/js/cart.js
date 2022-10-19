@@ -14,11 +14,27 @@ getProductInApi()
     GetTheProductInfoFromTheApi(productsApi)
     const inputQuantityElements = document.querySelectorAll(".itemQuantity")
     const deleteElements = document.querySelectorAll(".deleteItem")
-    updateQuantity(inputQuantityElements)
-    removeProduct(deleteElements) 
+    // updateQuantity(inputQuantityElements)
+    // removeProduct(deleteElements) 
     calculateTotalQuantity()
-  })
 
+    inputQuantityElements.forEach(selectedInputQuantity => {
+      selectedInputQuantity.addEventListener('change', () =>{
+        updateQuantity(selectedInputQuantity)
+        calculateTotalQuantity()
+      })
+    })
+
+    deleteElements.forEach(product => {
+      product.addEventListener('click', () => {
+        removeProduct(product) 
+        calculateTotalQuantity()
+      })
+    })
+
+    calculateTotalQuantity()
+
+  })
 
 
 //  Recupère l'id des produits dans l'API
@@ -35,7 +51,9 @@ function getProductInApi(){
 
 // Récupère les informations sur le produit dans l'API
 function GetTheProductInfoFromTheApi(productsApi){
-    contentFromLocalstorage.map((productList) => {
+    const contentFromLocalstorage = getContentFromLocalStorage();
+    // contentFromLocalstorage.map((productList) => {
+      contentFromLocalstorage.map((productList) => {
       let modifiedProductList = {...productList};
       modifiedProductList.price = productsApi.filter(apiProduct => apiProduct._id === modifiedProductList.itemId)[0].price
       modifiedProductList.name = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].name
@@ -81,43 +99,61 @@ function displaysProductInfo(modifiedProductList){
 
 
 // Met à jour la quantité des produits
-function updateQuantity(inputQuantityElements){
-  inputQuantityElements.forEach(selectedInputQuantity => {
-    selectedInputQuantity.addEventListener('change', () =>{
+function updateQuantity(selectedInputQuantity){
+  const contentFromLocalstorage = getContentFromLocalStorage();
+
+  // inputQuantityElements.forEach(selectedInputQuantity => {
+    // selectedInputQuantity.addEventListener('change', () =>{
       if(selectedInputQuantity.value > 0 && selectedInputQuantity.value <= 100){
-        let updateQuantity = contentFromLocalstorage.find(localstorageProduct => (localstorageProduct.itemId === selectedInputQuantity.dataset.id) && (localstorageProduct.itemColor === selectedInputQuantity.dataset.color))
+        let updateQuantity = contentFromLocalstorage.find((localstorageProduct) => (localstorageProduct.itemId === selectedInputQuantity.dataset.id) && (localstorageProduct.itemColor === selectedInputQuantity.dataset.color))
         updateQuantity.itemQuantity = parseInt(selectedInputQuantity.value)
         localStorage.setItem('product', JSON.stringify(contentFromLocalstorage));
-        calculateTotalQuantity()
+        // calculateTotalQuantity()
+
       }else{
         window.alert("Veuillez choisir une quantité entre 0 et 100")
       }
-    })
-  });
+    // })
+  // });
 }
 
 
 // Supprime un produit quand on clique sur supprimer
-function removeProduct(deleteElements){
-  deleteElements.forEach(product => {
-    product.addEventListener('click', () => {
+function removeProduct(product){
+    const contentFromLocalstorage = getContentFromLocalStorage();
+
+  // deleteElements.forEach(product => {
+    // product.addEventListener('click', () => {
       const articleElement = product.closest('article')
-      const productToRemove = contentFromLocalstorage.find(localstorageProduct => localstorageProduct.itemId === articleElement.dataset.id && localstorageProduct.itemColor === articleElement.dataset.color)
-      contentFromLocalstorage.splice(productToRemove, 1)
-      localStorage.setItem("product", JSON.stringify(contentFromLocalstorage))
+      // const productToRemove = contentFromLocalstorage.find((localstorageProduct) => (localstorageProduct.itemId === articleElement.dataset.id) && (localstorageProduct.itemColor === articleElement.dataset.color))
+      // console.log("productToRemove", productToRemove);
+      // contentFromLocalstorage.splice(productToRemove, 1)
+      // localStorage.setItem("product", JSON.stringify(contentFromLocalstorage))
+      // -----------------------------------------------------
+      const productsAfterSuppression = contentFromLocalstorage.filter(localstorageProduct => localstorageProduct.itemId !== articleElement.dataset.id || localstorageProduct.itemColor !== articleElement.dataset.color)
+      localStorage.setItem("product", JSON.stringify(productsAfterSuppression))
+      console.log("productsAfterSuppression", productsAfterSuppression);
+      // -----------------------------------------------------
       articleElement.remove()
-    })
-  })
+      // calculateTotalQuantity()
+    // })
+    
+  // })
+
 }
 
 function calculateTotalQuantity(){
-    let localStorageProducts = contentFromLocalstorage;
+
+    const newContentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
+    console.log("contentFromLocalstorage dans fonction", newContentFromLocalstorage);
     let totalProductQuantity = 0;                          
-    for (let product of localStorageProducts){            
-        totalProductQuantity += parseInt(product.itemQuantity);         
+    for (let product of newContentFromLocalstorage){            
+      totalProductQuantity += parseInt(product.itemQuantity);         
     }
     totalQuantityElement.textContent = totalProductQuantity
 }
+
+
 
 // function calculateTotalPrice(){
 // }
@@ -178,6 +214,7 @@ formInputElements.forEach(selectedFormElement => {
     }    
   })
 });
+
 
 // Reset le formulaire 
 function resetForm(){
