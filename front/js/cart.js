@@ -2,7 +2,10 @@ const sectionElement = document.getElementById("cart__items");
 const totalQuantityElement = document.getElementById("totalQuantity")
 const totalPriceElement = document.getElementById("totalPrice")
 
-const contentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
+function getContentFromLocalStorage() {
+  const contentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
+  return contentFromLocalstorage
+}
 
 
 getProductInApi()
