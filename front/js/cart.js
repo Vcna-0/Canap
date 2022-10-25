@@ -1,44 +1,31 @@
 const sectionElement = document.getElementById("cart__items");
 const totalQuantityElement = document.getElementById("totalQuantity")
 const totalPriceElement = document.getElementById("totalPrice")
-
-function getContentFromLocalStorage() {
-  const contentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
-  return contentFromLocalstorage
-}
+const buttonOrderElement = document.getElementById("order")
 
 
-getProductInApi()
+getProductsInApi()
   .then((response) => response.json())
   .then((productsApi) => {
     GetTheProductInfoFromTheApi(productsApi)
     const inputQuantityElements = document.querySelectorAll(".itemQuantity")
     const deleteElements = document.querySelectorAll(".deleteItem")
-    // updateQuantity(inputQuantityElements)
-    // removeProduct(deleteElements) 
+    updateQuantity(inputQuantityElements, productsApi)
+    removeProduct(deleteElements, productsApi) 
     calculateTotalQuantity()
-
-    inputQuantityElements.forEach(selectedInputQuantity => {
-      selectedInputQuantity.addEventListener('change', () =>{
-        updateQuantity(selectedInputQuantity)
-        calculateTotalQuantity()
-      })
-    })
-
-    deleteElements.forEach(product => {
-      product.addEventListener('click', () => {
-        removeProduct(product) 
-        calculateTotalQuantity()
-      })
-    })
-
-    calculateTotalQuantity()
-
+    calculateTotalPrice(productsApi)
   })
 
 
-//  Recupère l'id des produits dans l'API
-function getProductInApi(){
+// Recupère tous les produits présents dans le localStorage
+function getProductsFromLocalStorage() {
+  const contentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
+  return contentFromLocalstorage
+}
+
+
+// Recupère tous les produits dans l'API
+function getProductsInApi(){
     return new Promise((resolve, reject) => {
     const productsApi = fetch(`http://localhost:3000/api/products`)
     resolve(productsApi);
@@ -46,117 +33,123 @@ function getProductInApi(){
 }
 
 
-// ============== AFFICHAGE DES PRODUITS ============== //
+// Filtre les produits de l'api en fonction de l'id des produits présent dans le localStorage
+function filterApiProductsById(productsApi, productList){
+  let product = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0]
+  return product
+}
 
 
-// Récupère les informations sur le produit dans l'API
+// =================== AFFICHAGE DES PRODUITS =================== //
+
+
+// Créer un nouvel objet et récupère les informations manquantes sur le produit dans l'API
 function GetTheProductInfoFromTheApi(productsApi){
-    const contentFromLocalstorage = getContentFromLocalStorage();
-    // contentFromLocalstorage.map((productList) => {
-      contentFromLocalstorage.map((productList) => {
-      let modifiedProductList = {...productList};
-      modifiedProductList.price = productsApi.filter(apiProduct => apiProduct._id === modifiedProductList.itemId)[0].price
-      modifiedProductList.name = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].name
-      modifiedProductList.imgUrl = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].imageUrl
-      modifiedProductList.altTxt = productsApi.filter(apiProduct => apiProduct._id === productList.itemId)[0].altTxt
-      displaysProductInfo(modifiedProductList)
-    })
+  const contentFromLocalstorage = getProductsFromLocalStorage();
+  contentFromLocalstorage.map((productList) => {
+    let newProductList = {...productList};
+    let filteredProduct = filterApiProductsById(productsApi, productList)
+    newProductList.price = filteredProduct.price
+    newProductList.name = filteredProduct.name
+    newProductList.imgUrl = filteredProduct.imageUrl
+    newProductList.altTxt = filteredProduct.altTxt
+    displaysProductInfo(newProductList)
+  })
 }  
 
 
-
-// Affiche les informations des produits qui ont été ajouter au panier
-function displaysProductInfo(modifiedProductList){
+// Affiche les informations des produits qui ont été ajoutés au panier
+function displaysProductInfo(newProductList){
   return new Promise((resolve, reject) => {
     const articleElement = document.createElement("article");
     articleElement.className = "cart__item";
-    articleElement.dataset.id = modifiedProductList.itemId;
-    articleElement.dataset.color = modifiedProductList.itemColor;
+    articleElement.dataset.id = newProductList.itemId;
+    articleElement.dataset.color = newProductList.itemColor;
     articleElement.innerHTML = `<div class="cart__item__img">
-                                    <img src="${modifiedProductList.imgUrl}" alt="${modifiedProductList.altTxt}" />
+                                    <img src="${newProductList.imgUrl}" alt="${newProductList.altTxt}" />
                                   </div>
                                   <div class="cart__item__content">
                                     <div class="cart__item__content__description">
-                                      <h2>${modifiedProductList.name}</h2>
-                                    <p>${modifiedProductList.itemColor}</p>
-                                    <p>${modifiedProductList.price} €</p>
+                                      <h2>${newProductList.name}</h2>
+                                    <p>${newProductList.itemColor}</p>
+                                    <p>${newProductList.price} €</p>
                                   </div>
                                   <div class="cart__item__content__settings">
                                     <div class="cart__item__content__settings__quantity">
                                       <p>Qté :</p>
-                                      <input type="number" class="itemQuantity" data-id="${modifiedProductList.itemId}" data-color="${modifiedProductList.itemColor}" name="itemQuantity" min="1" max="100" value=${modifiedProductList.itemQuantity} />
+                                      <input type="number" class="itemQuantity" data-id="${newProductList.itemId}" data-color="${newProductList.itemColor}" name="itemQuantity" min="1" max="100" value=${newProductList.itemQuantity} />
                                     </div>
                                     <div class="cart__item__content__settings__delete">
                                       <p class="deleteItem">Supprimer</p>
                                     </div>
                                   </div>
                                 </div>`
-                                
     resolve(sectionElement.appendChild(articleElement));
-
   })
 }
 
 
-// Met à jour la quantité des produits
-function updateQuantity(selectedInputQuantity){
-  const contentFromLocalstorage = getContentFromLocalStorage();
+// Met à jour la quantité des produits quand on modifie l'input Qté
+function updateQuantity(inputQuantityElements, productsApi){
+  inputQuantityElements.forEach(selectedInputQuantity => {
+    selectedInputQuantity.addEventListener('change', () =>{
+      const contentFromLocalstorage = getProductsFromLocalStorage()
 
-  // inputQuantityElements.forEach(selectedInputQuantity => {
-    // selectedInputQuantity.addEventListener('change', () =>{
       if(selectedInputQuantity.value > 0 && selectedInputQuantity.value <= 100){
         let updateQuantity = contentFromLocalstorage.find((localstorageProduct) => (localstorageProduct.itemId === selectedInputQuantity.dataset.id) && (localstorageProduct.itemColor === selectedInputQuantity.dataset.color))
         updateQuantity.itemQuantity = parseInt(selectedInputQuantity.value)
         localStorage.setItem('product', JSON.stringify(contentFromLocalstorage));
-        // calculateTotalQuantity()
-
-      }else{
+        calculateTotalQuantity()
+        calculateTotalPrice(productsApi)
+      }
+      else{
         window.alert("Veuillez choisir une quantité entre 0 et 100")
       }
-    // })
-  // });
+    })
+  });
 }
 
 
 // Supprime un produit quand on clique sur supprimer
-function removeProduct(product){
-    const contentFromLocalstorage = getContentFromLocalStorage();
-
-  // deleteElements.forEach(product => {
-    // product.addEventListener('click', () => {
-      const articleElement = product.closest('article')
-      // const productToRemove = contentFromLocalstorage.find((localstorageProduct) => (localstorageProduct.itemId === articleElement.dataset.id) && (localstorageProduct.itemColor === articleElement.dataset.color))
-      // console.log("productToRemove", productToRemove);
-      // contentFromLocalstorage.splice(productToRemove, 1)
-      // localStorage.setItem("product", JSON.stringify(contentFromLocalstorage))
-      // -----------------------------------------------------
-      const productsAfterSuppression = contentFromLocalstorage.filter(localstorageProduct => localstorageProduct.itemId !== articleElement.dataset.id || localstorageProduct.itemColor !== articleElement.dataset.color)
-      localStorage.setItem("product", JSON.stringify(productsAfterSuppression))
-      console.log("productsAfterSuppression", productsAfterSuppression);
-      // -----------------------------------------------------
-      articleElement.remove()
-      // calculateTotalQuantity()
-    // })
-    
-  // })
-
+function removeProduct(deleteElements, productsApi){
+  deleteElements.forEach(productToBeDeleted => {
+    productToBeDeleted.addEventListener('click', () => {
+      const contentFromLocalstorage = getProductsFromLocalStorage();
+        const articleElement = productToBeDeleted.closest('article')
+        const productslistAfterDelete = contentFromLocalstorage.filter(localstorageProduct => localstorageProduct.itemId !== articleElement.dataset.id || localstorageProduct.itemColor !== articleElement.dataset.color)
+        localStorage.setItem("product", JSON.stringify(productslistAfterDelete))
+        articleElement.remove()
+        calculateTotalQuantity()
+        calculateTotalPrice(productsApi)
+    })
+  })
 }
 
-function calculateTotalQuantity(){
 
-    const newContentFromLocalstorage = JSON.parse(localStorage.getItem("product"));
-    console.log("contentFromLocalstorage dans fonction", newContentFromLocalstorage);
-    let totalProductQuantity = 0;                          
-    for (let product of newContentFromLocalstorage){            
-      totalProductQuantity += parseInt(product.itemQuantity);         
+// Calucul la quantité totale des produits
+function calculateTotalQuantity(productsApi){
+    const contentFromLocalstorage = getProductsFromLocalStorage()
+    let totalProductQuantity = 0
+    for (let product of contentFromLocalstorage){
+      totalProductQuantity += parseInt(product.itemQuantity)
     }
     totalQuantityElement.textContent = totalProductQuantity
 }
 
 
+// Calcul le prix total des produits
+function calculateTotalPrice(productsApi){
+  const contentFromLocalstorage = getProductsFromLocalStorage();
+  let totalPrice = 0
+    contentFromLocalstorage.map((productList) => {
+      let newProductList = {...productList};
+      let filteredProduct = filterApiProductsById(productsApi, productList)
+      let price = filteredProduct.price * productList.itemQuantity
+      totalPrice += price
+    })
+  totalPriceElement.textContent = totalPrice
+}
 
-// function calculateTotalPrice(){
-// }
 
 // ============== FORMULAIRE ============== //
 
@@ -165,31 +158,31 @@ const formData = [
   {
     name: "firstName",
     regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
-    error: "Veuillez indiquer un prénom valide"
+    error: "X Veuillez indiquer un prénom valide"
   },
 
   {
     name: "lastName",
     regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
-    error: "Veuillez indiquer un nom valide"
+    error: "X Veuillez indiquer un nom valide"
   },
 
   {
     name: "address",
     regex: /([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*)/g,
-    error: "Veuillez indiquer une adresse valide"
+    error: "X Veuillez indiquer une adresse valide"
   },
 
   {
     name: "city",
     regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
-    error: "Veuillez indiquer une ville valide"
+    error: "X Veuillez indiquer une ville valide"
   },
 
   {
     name: "email",
     regex: /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i,
-    error: "Veuillez indiquer une adresse mail valide"
+    error: "X Veuillez indiquer une adresse mail valide"
   }
 
 ]
@@ -198,28 +191,69 @@ const formInputElements = document.querySelectorAll('div.cart__order__form__ques
 resetForm()
 
 
-formInputElements.forEach(selectedFormElement => {
-  selectedFormElement.addEventListener('change', () =>{
-    
-    const informationsToDisplay = formData.find(formDataElement => formDataElement.name === selectedFormElement.name)
-    let formElementIsValid = informationsToDisplay.regex.test(selectedFormElement.value)
-    let nameErrorElementId = selectedFormElement.name+"ErrorMsg"
+formInputElements.forEach(selectedInputElement => {
+  selectedInputElement.addEventListener('change', () =>{
+
+    let data = findInFormDataArray(selectedInputElement)
+    let formElementIsValid = checkRegex(data, selectedInputElement)
+
+    let nameErrorElementId = selectedInputElement.name+"ErrorMsg"
     const errorMessageElement =  document.getElementById(nameErrorElementId);
 
     if (formElementIsValid) {
-      errorMessageElement.textContent = " "
+      errorMessageElement.textContent = "✓ Valide"
+      registersFormValues()
     }
     else{
-      errorMessageElement.textContent = informationsToDisplay.error
-    }    
+      errorMessageElement.textContent = data.error
+    }   
   })
 });
 
 
-// Reset le formulaire 
+
+// Trouve dans le tableau FormData l'objet correspondant à l'input selectionné
+function findInFormDataArray(selectedInputElement){
+  const correspondingItem = formData.find(formDataElement => formDataElement.name === selectedInputElement.name)
+  return correspondingItem
+}
+
+
+// Vérifie la correspondance entre la valeur de l'input et l'expression rationnelle
+function checkRegex(data, selectedInputElement){
+  let valueformElement = data.regex.test(selectedInputElement.value)
+  return valueformElement
+}
+
+
+// Reset le formulaire quand on refresh la page
 function resetForm(){
     for (let a = 0; a < formInputElements.length; a++) {
         formInputElements[a].value = "";
     }
 }
+
+
+function registersFormValues(){
+  const formsValues = {
+        contact : {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          address: address.value,
+          city: city.value,
+          email: email.value
+        }
+      }      
+}
+
+// // au clique commander :
+// // verifiez si les champs sont completer correctement
+
+// buttonOrderElement.addEventListener("click", function(e){
+//   e.preventDefault();
+//   for(formInputElements)
+// })
+
+
+
 
