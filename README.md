@@ -22,8 +22,6 @@ console when the server starts, e.g. `Listening on port 3001`.
 
 -----
 
-![Logo](front/images/logo.png) 
-
 ## Table des matières
 
 - [Le projet](#le-projet)
