@@ -22,7 +22,7 @@ console when the server starts, e.g. `Listening on port 3001`.
 
 -----
 
-![Logo](chemin du logo) 
+![Logo](front/images/logo.png) 
 
 ## Table des matières
 
