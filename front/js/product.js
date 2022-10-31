@@ -6,38 +6,8 @@ const colorSelect = document.querySelector('#colors');
 const addCartButton = document.querySelector('#addToCart');
 const quantityInput = document.querySelector('#quantity');
 
-// ----------------------------------------------------------
-// ----------------------------------------------------------
-
-// getIdFromUrl()
-//   .then((urlId)=> {
-//     getProductInApi(urlId)
-//       .then((response) => response.json())  
-//       .then((productFilter) => {
-//       displaySelectedProduct(productFilter)
-//       })  
-//   })
-
-
-// function getIdFromUrl(){
-//   return new Promise((resolve, reject)=>{
-//     const str = window.location.href;
-//     const url = new URL(str);
-//     const urlId = url.searchParams.get('id');
-//     resolve(urlId)
-//   })
-// }
-
-// function getProductInApi(urlId){
-//   return new Promise((resolve, reject) => {
-//     const reponse = fetch(`http://localhost:3000/api/products/${urlId}`)
-//     resolve(reponse)
-//   })
-// }
-
-// ----------------------------------------------------------
-// ----------------------------------------------------------
 let productId = getIdFromUrl();
+
 
 // Recupère l'id dans l'url
 function getIdFromUrl(){
@@ -48,6 +18,7 @@ function getIdFromUrl(){
 
   return urlId;
 }
+
 
 // Recupère l'id du produit dans l'API
 function getProductInApi(urlId){
@@ -96,6 +67,7 @@ function checkInputValues(){
   }
 }
 
+
 // Enregistre le nouveau produit 
 function registerNewProduct(){
   const newItem = {
@@ -105,6 +77,7 @@ function registerNewProduct(){
   };
   compareStorageContents(newItem);
 }
+
 
 // Compare le nouveau produit avec le contenu du localStorage
 function compareStorageContents(newItem){
@@ -134,6 +107,7 @@ function compareStorageContents(newItem){
     window.localStorage.setItem("product", JSON.stringify(newArray));
   }
 }
+
 
 // Ajoute le nouveau produit dans le localStorage
 function addProductInLocalStorage(localStorageContent){
