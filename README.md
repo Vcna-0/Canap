@@ -1,6 +1,9 @@
 # Formation developpeur web - OPENCLASSROOM
 
-Ma solution au `nom du projet` du parcours de formation __developpeur web__ chez Openclassroom.
+_EN COUR DE REDACTION_
+
+Ma solution au `PROJET 5 -Construisez un site e-commerce en JavaScript` du parcours de formation __developpeur web__ chez Openclassroom.
+
 
 This is the front end and back end server for Project 5 of the Web Developer path.
 
