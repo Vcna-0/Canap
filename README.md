@@ -29,8 +29,6 @@ console when the server starts, e.g. `Listening on port 3001`.
   - [Éléments fournis pour la réalisation du projet](#éléments-fournis-pour-la-réalisation-du-projet)
   - [Cahier des charges](#cahier-des-charges)
   - [Contraintes](#contraintes)
-  - [Palette de couleur](#palette-de-couleur)
-  - [Fonts](#fonts)
 - [Mon processus](#mon-processus)
   - [Outils et technologies utilisés](#outils-et-technologies-utilisés)
   - [Les difficultés rencontrées](#Les-difficultés-rencontrées)
@@ -51,23 +49,22 @@ console when the server starts, e.g. `Listening on port 3001`.
 
 ### Éléments fournis pour la réalisation du projet
 
+- Lien vers le repertoire du projet
+- Les spécifications techniques et fonctionnelles du projet
+
 ### Cahier des charges
 
 ** Indiquer ici le cahier des charges
 
 ### Contraintes
 
-*** indiquer ici les contraintes
-
-### Palette de couleur
-
- `#` →
-
-### Fonts
+Interdiction d'utiliser un framework ou librairie Javascript
 
 ## 🔨 Mon processus
 
 ### Outils et technologies utilisés
+
+- VScode
 
 ### Ressources utiles
 
