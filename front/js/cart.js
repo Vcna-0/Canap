@@ -43,7 +43,7 @@ function filterApiProductsById(productsApi, productList){
 // =================== AFFICHAGE DES PRODUITS =================== //
 
 
-// Créer un nouvel objet et récupère les informations manquantes sur le produit dans l'API
+// Créer un nouvel objet et récupère les informations manquantes (price, name etc..) sur le produit dans l'API 
 function GetTheProductInfoFromTheApi(productsApi){
   const contentFromLocalstorage = getProductsFromLocalStorage();
   contentFromLocalstorage.map((productList) => {
@@ -126,7 +126,7 @@ function removeProduct(deleteElements, productsApi){
 }
 
 
-// Calucul la quantité totale des produits
+// Calcul la quantité totale des produits
 function calculateTotalQuantity(productsApi){
     const contentFromLocalstorage = getProductsFromLocalStorage()
     let totalProductQuantity = 0
@@ -153,29 +153,28 @@ function calculateTotalPrice(productsApi){
 
 // ============== FORMULAIRE ============== //
 
-
 const formData = [
   {
     name: "firstName",
-    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/i,
     error: "X Veuillez indiquer un prénom valide"
   },
 
   {
     name: "lastName",
-    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/i,
     error: "X Veuillez indiquer un nom valide"
   },
 
   {
     name: "address",
-    regex: /([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*)/g,
+    regex: /([0-9]*) ?([a-zA-Z,\. ]*) ?([0-9]{5}) ?([a-zA-Z]*)/i,
     error: "X Veuillez indiquer une adresse valide"
   },
 
   {
     name: "city",
-    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/g,
+    regex: /^([A-Za-zÀ-Üà-ü-]{2,20})$/i,
     error: "X Veuillez indiquer une ville valide"
   },
 
@@ -189,27 +188,24 @@ const formData = [
 
 const formInputElements = document.querySelectorAll('div.cart__order__form__question input');
 resetForm()
+listenFormEntries()
+getTheOrderId()
 
 
-formInputElements.forEach(selectedInputElement => {
-  selectedInputElement.addEventListener('change', () =>{
+// Ecoute les entrées du formulaire
+function listenFormEntries(){
+  formInputElements.forEach(selectedInputElement => {
+    selectedInputElement.addEventListener('change', () =>{
 
-    let data = findInFormDataArray(selectedInputElement)
-    let formElementIsValid = checkRegex(data, selectedInputElement)
+      let data = findInFormDataArray(selectedInputElement)
+      let formElementIsValid = checkRegex(data, selectedInputElement)
+      let nameErrorElementId = selectedInputElement.name+"ErrorMsg"
+      const errorMessageElement =  document.getElementById(nameErrorElementId);
 
-    let nameErrorElementId = selectedInputElement.name+"ErrorMsg"
-    const errorMessageElement =  document.getElementById(nameErrorElementId);
-
-    if (formElementIsValid) {
-      errorMessageElement.textContent = "✓ Valide"
-      registersFormValues()
-    }
-    else{
-      errorMessageElement.textContent = data.error
-    }   
-  })
-});
-
+      displayFormError(formElementIsValid, errorMessageElement, data)
+    })
+  });
+}
 
 
 // Trouve dans le tableau FormData l'objet correspondant à l'input selectionné
@@ -226,34 +222,126 @@ function checkRegex(data, selectedInputElement){
 }
 
 
+// Affiche les erreurs dans le formulaire 
+function displayFormError(formElementIsValid, errorMessageElement, data){
+  if (formElementIsValid) {
+    errorMessageElement.textContent = "✓ Valide"
+  }
+  else{
+    errorMessageElement.textContent = data.error
+  }   
+}
+
+
+// ============== COMMANDER ============== //
+
+
+// Requete POST sur l'api pour récupèrer l'id de commande
+function getTheOrderId(){
+  buttonOrderElement.addEventListener("click", function(e){
+    e.preventDefault()
+    let formIsValid = checkAllTheFormValue()
+    let productsInTheLocalstorage = checkTheQuantityProductInTheLocalStorage()
+
+    if (productsInTheLocalstorage) {
+      if (formIsValid) {
+        let registerContact = registersFormValues()
+        const requestOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(registerContact)
+        };
+        redirectionToTheConfirmationPage(requestOptions)
+
+      }
+      else{
+        window.alert("Le formulaire est invalide")
+      }
+    }
+    else{
+      window.alert("Le panier est vide")
+    }
+  })
+}
+
+// Vérifie s'il y a des produits dans le localStorage
+function checkTheQuantityProductInTheLocalStorage(){
+  let localstorageFull = true
+
+  if ("product" in localStorage) {
+    localstorageFull = true
+  }
+  else{
+    localstorageFull = false
+  }
+  return localstorageFull
+}
+
+
+// Verifie si l'intégralité du formulaire est valide
+function checkAllTheFormValue() {
+  let allFormIsValid = true
+    for (inputElements of formInputElements) {
+      let data = findInFormDataArray(inputElements)
+      let formElementIsValid = checkRegex(data, inputElements)
+
+      if(formElementIsValid){
+        allFormIsValid = true
+      }
+      else{
+        allFormIsValid = false
+        break;
+      }
+    } 
+  return allFormIsValid
+}
+
+
+// Enregistre les données entrées dans le formulaire
+function registersFormValues(){
+  let products = []
+  const contentFromLocalstorage = getProductsFromLocalStorage();
+  
+  for (const product of contentFromLocalstorage) {
+    let productID = product.itemId
+    products.push(productID)
+  }
+
+  const formsValues = {
+    contact : {
+      firstName: firstName.value,
+      lastName: lastName.value,
+      address: address.value,
+      city: city.value,
+      email: email.value
+    },
+    products : products
+  }  
+
+  return formsValues
+}
+
+
+// Redirige vers la page de confirmation 
+function redirectionToTheConfirmationPage(requestOptions){
+  fetch('http://localhost:3000/api/products/order', requestOptions)
+      .then(response => response.json())
+      .then(data => location.href = './confirmation.html?orderId=' + data.orderId);
+      removeLocalStorage();
+}
+
+
+// Supprime le contenu du localStorage après avoir passé commande
+function removeLocalStorage(){
+  localStorage.removeItem('product');
+}
+
+
 // Reset le formulaire quand on refresh la page
 function resetForm(){
     for (let a = 0; a < formInputElements.length; a++) {
         formInputElements[a].value = "";
     }
 }
-
-
-function registersFormValues(){
-  const formsValues = {
-        contact : {
-          firstName: firstName.value,
-          lastName: lastName.value,
-          address: address.value,
-          city: city.value,
-          email: email.value
-        }
-      }      
-}
-
-// // au clique commander :
-// // verifiez si les champs sont completer correctement
-
-// buttonOrderElement.addEventListener("click", function(e){
-//   e.preventDefault();
-//   for(formInputElements)
-// })
-
-
 
 
