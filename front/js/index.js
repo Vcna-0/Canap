@@ -14,12 +14,11 @@ function displayProducts(value) {
   for (const object of value) {
     const aElement = document.createElement('a');
     aElement.href = './product.html?id=' + object._id;
-    let htmlelement = ` <article>
+    aElement.innerHTML = ` <article>
                           <img src="${object.imageUrl}" alt="${object.altTxt}">
                           <h3 class="productName">${object.name}</h3>
                           <p class="productDescription">${object.description}</p>
                         </article>`;
-    aElement.innerHTML = htmlelement;
     sectionItems.appendChild(aElement);
   }
 }
