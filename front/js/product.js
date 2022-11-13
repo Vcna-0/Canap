@@ -8,7 +8,6 @@ const quantityInput = document.querySelector('#quantity');
 
 let productId = getIdFromUrl();
 
-
 // Recupère l'id dans l'url
 function getIdFromUrl(){
   const str = window.location.href;
@@ -104,7 +103,7 @@ function compareStorageContents(newItem){
     window.alert('Le produit a bien été ajouté au panier');
     let newArray =[];
     newArray.push(newItem);
-    window.localStorage.setItem("product", JSON.stringify(newArray));
+    addProductInLocalStorage(newArray);
   }
 }
 
