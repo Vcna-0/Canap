@@ -40,6 +40,8 @@ function filterApiProductsById(productsApi, productList){
 }
 
 
+
+
 // =================== AFFICHAGE DES PRODUITS =================== //
 
 
@@ -188,12 +190,12 @@ const formData = [
 
 const formInputElements = document.querySelectorAll('div.cart__order__form__question input');
 resetForm()
-listenFormEntries()
+checkFormEntries()
 getTheOrderId()
 
 
 // Ecoute les entrées du formulaire
-function listenFormEntries(){
+function checkFormEntries(){
   formInputElements.forEach(selectedInputElement => {
     selectedInputElement.addEventListener('change', () =>{
 

@@ -89,7 +89,8 @@ function compareStorageContents(newItem){
           window.alert('Le produit a bien été ajouté au panier');
           identicalProduct.itemQuantity = newQuantity
           addProductInLocalStorage(localStorageContent);
-      } else {
+      } 
+      else {
         window.alert('Vous ne pouvez pas ajoutez plus de 100 articles du même produit')
       }   
     }
