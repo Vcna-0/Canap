@@ -204,7 +204,7 @@ function checkFormEntries(){
       let nameErrorElementId = selectedInputElement.name+"ErrorMsg"
       const errorMessageElement =  document.getElementById(nameErrorElementId);
 
-      displayFormError(formElementIsValid, errorMessageElement, data)
+      displayFormMessage(formElementIsValid, errorMessageElement, data)
     })
   });
 }
@@ -225,7 +225,7 @@ function checkRegex(data, selectedInputElement){
 
 
 // Affiche les erreurs dans le formulaire 
-function displayFormError(formElementIsValid, errorMessageElement, data){
+function displayFormMessage(formElementIsValid, errorMessageElement, data){
   if (formElementIsValid) {
     errorMessageElement.textContent = "✓ Valide"
   }
